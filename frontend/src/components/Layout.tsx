@@ -16,9 +16,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   if (!isAuthenticated()) return null;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen" style={{ background: "var(--bg)" }}>
       <Sidebar />
-      <main className="ml-60 flex-1 overflow-y-auto">
+      <main className="ml-64 flex-1 overflow-y-auto min-h-screen">
         <div className="max-w-6xl mx-auto px-6 py-8">{children}</div>
       </main>
     </div>

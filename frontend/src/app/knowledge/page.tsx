@@ -34,40 +34,60 @@ export default function KnowledgePage() {
   }
 
   const confidence = result ? Math.round(result.confidence * 100) : 0;
-  const confidenceColor = confidence >= 80 ? "text-green-600" : confidence >= 60 ? "text-yellow-600" : "text-red-600";
+  const confColor  =
+    confidence >= 80 ? "var(--green)" :
+    confidence >= 60 ? "var(--amber)"  : "var(--red)";
+
+  const inputStyle = {
+    background: "var(--bg3)",
+    border: "1px solid var(--border2)",
+    color: "var(--text)",
+  };
 
   return (
     <Layout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Knowledge Query</h1>
-          <p className="text-gray-500 text-sm mt-1">Ask anything about your tasks, emails, and schedule</p>
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Knowledge Query</h1>
+          <p className="text-sm mt-1" style={{ color: "var(--text2)" }}>
+            Ask anything about your tasks, emails, and schedule
+          </p>
         </div>
 
         {/* Query input */}
-        <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+        <div className="rounded-xl p-6" style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}>
           <div className="flex gap-3">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleQuery()}
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 rounded-lg px-4 py-2.5 text-sm outline-none"
+              style={inputStyle}
               placeholder="Ask a question about your workflow…"
             />
             <button
               onClick={() => handleQuery()}
               disabled={loading || !query.trim()}
-              className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-lg px-5 py-2.5 text-sm font-medium disabled:opacity-50"
+              style={{ background: "var(--accent)", color: "#fff" }}
             >
-              {loading ? "Thinking…" : "🧠 Ask"}
+              {loading ? "Thinking…" : "◈ Ask"}
             </button>
           </div>
 
           {/* Suggested queries */}
           <div className="mt-4 flex flex-wrap gap-2">
             {SUGGESTED.map((s) => (
-              <button key={s} onClick={() => { setQuery(s); handleQuery(s); }}
-                className="text-xs rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-gray-600 hover:bg-gray-100">
+              <button
+                key={s}
+                onClick={() => { setQuery(s); handleQuery(s); }}
+                className="text-xs rounded-full px-3 py-1.5 transition-colors"
+                style={{
+                  background: "var(--bg3)",
+                  color: "var(--text2)",
+                  border: "1px solid var(--border2)",
+                }}
+              >
                 {s}
               </button>
             ))}
@@ -76,31 +96,47 @@ export default function KnowledgePage() {
 
         {/* Result */}
         {result && (
-          <div className="rounded-xl bg-white border border-blue-200 shadow-sm p-6 space-y-4">
+          <div
+            className="rounded-xl p-6 space-y-4"
+            style={{ background: "var(--bg2)", border: "1px solid rgba(79,156,249,0.25)" }}
+          >
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-blue-900 flex items-center gap-2">
-                <span>🤖</span> AI Answer
+              <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: "var(--text)" }}>
+                <span style={{ color: "var(--accent)" }}>◈</span> AI Answer
               </h2>
-              <span className={`text-sm font-medium ${confidenceColor}`}>
+              <span className="text-sm font-medium font-mono" style={{ color: confColor }}>
                 {confidence}% confidence
               </span>
             </div>
 
-            <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
-              <p className="text-sm text-gray-800 whitespace-pre-wrap">{result.answer}</p>
+            <div
+              className="rounded-lg p-4"
+              style={{ background: "rgba(79,156,249,0.06)", border: "1px solid rgba(79,156,249,0.15)" }}
+            >
+              <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text)" }}>
+                {result.answer}
+              </p>
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Reasoning</p>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">{result.reasoning}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text3)" }}>
+                Reasoning
+              </p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text2)" }}>
+                {result.reasoning}
+              </p>
             </div>
 
             {result.sources.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-2">⚠ Limitations</p>
-                <ul className="list-disc list-inside space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--amber)" }}>
+                  ⚠ Limitations
+                </p>
+                <ul className="space-y-1">
                   {result.sources.map((s, i) => (
-                    <li key={i} className="text-sm text-gray-600">{s}</li>
+                    <li key={i} className="text-sm flex items-start gap-2" style={{ color: "var(--text2)" }}>
+                      <span className="opacity-50 mt-0.5">·</span>{s}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -108,11 +144,21 @@ export default function KnowledgePage() {
 
             {result.follow_up_queries.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Suggested Follow-ups</p>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text3)" }}>
+                  Suggested Follow-ups
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {result.follow_up_queries.map((q, i) => (
-                    <button key={i} onClick={() => { setQuery(q); handleQuery(q); }}
-                      className="text-xs rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-blue-700 hover:bg-blue-100">
+                    <button
+                      key={i}
+                      onClick={() => { setQuery(q); handleQuery(q); }}
+                      className="text-xs rounded-full px-3 py-1.5 transition-colors"
+                      style={{
+                        background: "rgba(79,156,249,0.1)",
+                        color: "var(--accent)",
+                        border: "1px solid rgba(79,156,249,0.2)",
+                      }}
+                    >
                       {q}
                     </button>
                   ))}
@@ -124,16 +170,22 @@ export default function KnowledgePage() {
 
         {/* History */}
         {history.length > 1 && (
-          <div className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100">
-              <h2 className="font-semibold text-gray-900">Query History</h2>
+          <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}>
+            <div className="px-5 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+              <h2 className="text-sm font-semibold" style={{ color: "var(--text)" }}>Query History</h2>
             </div>
-            <div className="divide-y divide-gray-50">
+            <div>
               {history.slice(1).map(({ q, r }, i) => (
-                <button key={i} onClick={() => { setQuery(q); setResult(r); }}
-                  className="w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors">
-                  <p className="text-sm font-medium text-gray-800">{q}</p>
-                  <p className="text-xs text-gray-400 mt-0.5 truncate">{r.answer.slice(0, 80)}…</p>
+                <button
+                  key={i}
+                  onClick={() => { setQuery(q); setResult(r); }}
+                  className="w-full text-left px-5 py-3 transition-colors"
+                  style={{ borderBottom: "1px solid var(--border)" }}
+                >
+                  <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{q}</p>
+                  <p className="text-xs mt-0.5 truncate" style={{ color: "var(--text3)" }}>
+                    {r.answer.slice(0, 80)}…
+                  </p>
                 </button>
               ))}
             </div>

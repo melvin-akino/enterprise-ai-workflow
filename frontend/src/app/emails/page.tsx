@@ -9,11 +9,23 @@ import type { EmailMessage, EmailCreate, AIAnalysis } from "@/types";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 
-const statusColors: Record<string, string> = {
-  draft:                "bg-gray-100 text-gray-600",
-  pending_confirmation: "bg-yellow-100 text-yellow-700",
-  sent:                 "bg-green-100 text-green-700",
-  failed:               "bg-red-100 text-red-600",
+const statusBg: Record<string, string> = {
+  draft:                "rgba(139,149,168,0.12)",
+  pending_confirmation: "rgba(245,166,35,0.12)",
+  sent:                 "rgba(62,207,142,0.12)",
+  failed:               "rgba(239,68,68,0.12)",
+};
+const statusFg: Record<string, string> = {
+  draft:                "var(--text2)",
+  pending_confirmation: "var(--amber)",
+  sent:                 "var(--green)",
+  failed:               "var(--red)",
+};
+
+const inputStyle = {
+  background: "var(--bg3)",
+  border: "1px solid var(--border2)",
+  color: "var(--text)",
 };
 
 export default function EmailsPage() {
@@ -82,53 +94,55 @@ export default function EmailsPage() {
     }
   }
 
+  const inputCls = "w-full rounded-lg px-3 py-2.5 text-sm outline-none";
+
   return (
     <Layout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Email</h1>
-            <p className="text-gray-500 text-sm mt-1">AI-reviewed email drafts</p>
+            <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Email</h1>
+            <p className="text-sm mt-1" style={{ color: "var(--text2)" }}>AI-reviewed email drafts</p>
           </div>
-          <button onClick={() => { setShowForm((v) => !v); setAnalysis(null); }}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+          <button
+            onClick={() => { setShowForm((v) => !v); setAnalysis(null); }}
+            className="rounded-lg px-4 py-2 text-sm font-medium"
+            style={{ background: "var(--accent)", color: "#fff" }}
+          >
             + Compose
           </button>
         </div>
 
         {showForm && (
-          <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6 space-y-4">
-            <h2 className="font-semibold text-gray-900">Compose Email</h2>
+          <div className="rounded-xl p-6 space-y-4" style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}>
+            <h2 className="text-sm font-semibold" style={{ color: "var(--text)" }}>Compose Email</h2>
             <form onSubmit={handleAnalyze} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">To *</label>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text2)" }}>To *</label>
                   <input required type="email" value={form.to_email} onChange={set("to_email")}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="recipient@company.com" />
+                    className={inputCls} style={inputStyle} placeholder="recipient@company.com" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CC (comma-separated)</label>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text2)" }}>CC (comma-separated)</label>
                   <input value={form.cc_emails} onChange={set("cc_emails")}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="cc@company.com" />
+                    className={inputCls} style={inputStyle} placeholder="cc@company.com" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text2)" }}>Subject *</label>
                 <input required value={form.subject} onChange={set("subject")}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Meeting follow-up" />
+                  className={inputCls} style={inputStyle} placeholder="Meeting follow-up" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Body *</label>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text2)" }}>Body *</label>
                 <textarea required value={form.body} onChange={set("body")} rows={6}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  placeholder="Email body…" />
+                  className={`${inputCls} resize-none`} style={inputStyle} placeholder="Email body…" />
               </div>
               <button type="submit" disabled={loading}
-                className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
-                {loading ? "Analyzing…" : "🤖 Analyze with AI"}
+                className="rounded-lg px-5 py-2.5 text-sm font-medium disabled:opacity-50"
+                style={{ background: "var(--accent)", color: "#fff" }}>
+                {loading ? "Analyzing…" : "◈ Analyze with AI"}
               </button>
             </form>
 
@@ -143,36 +157,42 @@ export default function EmailsPage() {
           </div>
         )}
 
-        <div className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}>
           {emails.length === 0 ? (
-            <div className="py-16 text-center text-gray-400">
-              <div className="text-4xl mb-3">📧</div>
-              <p>No emails yet. Compose your first one above.</p>
+            <div className="py-16 text-center">
+              <div className="text-3xl mb-3 opacity-30">✉</div>
+              <p className="text-sm" style={{ color: "var(--text3)" }}>No emails yet. Compose your first one above.</p>
             </div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead style={{ borderBottom: "1px solid var(--border)" }}>
                 <tr>
                   {["Subject", "To", "Status", "Created", "Actions"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide"
+                      style={{ color: "var(--text3)" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody>
                 {emails.map((e) => (
-                  <tr key={e.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{e.subject}</td>
-                    <td className="px-4 py-3 text-gray-500">{e.to_email}</td>
+                  <tr key={e.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                    <td className="px-4 py-3 font-medium" style={{ color: "var(--text)" }}>{e.subject}</td>
+                    <td className="px-4 py-3 text-sm" style={{ color: "var(--text2)" }}>{e.to_email}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[e.status]}`}>
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                        style={{ background: statusBg[e.status], color: statusFg[e.status] }}>
                         {e.status.replace("_", " ")}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{format(new Date(e.created_at), "MMM d, h:mm a")}</td>
+                    <td className="px-4 py-3 text-xs font-mono" style={{ color: "var(--text3)" }}>
+                      {format(new Date(e.created_at), "MMM d, h:mm a")}
+                    </td>
                     <td className="px-4 py-3">
                       {e.status === "pending_confirmation" && (
                         <button onClick={() => handleSend(e.id)}
-                          className="text-xs text-blue-600 hover:underline">Send</button>
+                          className="text-xs font-medium" style={{ color: "var(--accent)" }}>
+                          Send →
+                        </button>
                       )}
                     </td>
                   </tr>

@@ -2,8 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg:       #0d0f12;
+  --bg2:      #13161b;
+  --bg3:      #1a1f28;
+  --border:   #1e2530;
+  --border2:  #252d3a;
+  --accent:   #4f9cf9;
+  --accent-h: #3d8aed;
+  --accent-glow: rgba(79, 156, 249, 0.12);
+  --text:     #e8eaf0;
+  --text2:    #8b95a8;
+  --text3:    #4e5a6e;
+  --sidebar:  #0a0c0f;
+  --green:    #3ecf8e;
+  --amber:    #f5a623;
+  --red:      #ef4444;
+}
+
 @layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
   body {
     @apply antialiased;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans), "DM Sans", system-ui, sans-serif;
   }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.workflow-step {
+  animation: stepIn 0.3s ease forwards;
+  opacity: 0;
 }

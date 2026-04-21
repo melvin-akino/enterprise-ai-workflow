@@ -11,9 +11,7 @@ export default function LoginPage() {
   const { setAuth } = useAuthStore();
   const [tab, setTab] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    username: "", password: "", email: "", full_name: "",
-  });
+  const [form, setForm] = useState({ username: "", password: "", email: "", full_name: "" });
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -49,22 +47,58 @@ export default function LoginPage() {
     }
   }
 
+  const inputStyle = {
+    background: "var(--bg3)",
+    border: "1px solid var(--border2)",
+    color: "var(--text)",
+  };
+
+  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+    <div>
+      <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text2)" }}>
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+
+  const inputCls = "w-full rounded-lg px-3 py-2.5 text-sm outline-none";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-900 to-blue-700">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
+      style={{ background: "var(--bg)" }}>
+      {/* Ambient glow */}
+      <div
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: "rgba(79,156,249,0.08)", filter: "blur(80px)" }}
+      />
+
+      <div className="w-full max-w-sm relative z-10">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">⚡</div>
-          <h1 className="text-3xl font-bold text-white">AI Workflow Agent</h1>
-          <p className="text-blue-200 mt-1">Enterprise productivity powered by Claude</p>
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
+            style={{ background: "var(--accent)", boxShadow: "0 0 40px rgba(79,156,249,0.35)" }}
+          >
+            ⚡
+          </div>
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
+            AI Workflow Agent
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "var(--text2)" }}>
+            Enterprise productivity powered by Claude
+          </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
+        <div className="rounded-2xl p-6" style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}>
           {/* Tabs */}
-          <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
+          <div className="flex rounded-lg p-1 mb-6" style={{ background: "var(--bg3)" }}>
             {(["login", "register"] as const).map((t) => (
               <button key={t} onClick={() => setTab(t)}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors capitalize
-                  ${tab === t ? "bg-white shadow text-gray-900" : "text-gray-500 hover:text-gray-700"}`}>
+                className="flex-1 py-2 text-sm font-medium rounded-md transition-colors capitalize"
+                style={tab === t
+                  ? { background: "var(--bg2)", color: "var(--text)", boxShadow: "0 1px 4px rgba(0,0,0,0.4)" }
+                  : { color: "var(--text3)" }
+                }>
                 {t}
               </button>
             ))}
@@ -72,51 +106,41 @@ export default function LoginPage() {
 
           {tab === "login" ? (
             <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <Field label="Username">
                 <input required value={form.username} onChange={set("username")}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="your_username" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  className={inputCls} style={inputStyle} placeholder="your_username" />
+              </Field>
+              <Field label="Password">
                 <input required type="password" value={form.password} onChange={set("password")}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="••••••••" />
-              </div>
+                  className={inputCls} style={inputStyle} placeholder="••••••••" />
+              </Field>
               <button type="submit" disabled={loading}
-                className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                className="w-full rounded-lg py-2.5 text-sm font-semibold mt-2 disabled:opacity-50 transition-opacity"
+                style={{ background: "var(--accent)", color: "#fff" }}>
                 {loading ? "Signing in…" : "Sign In"}
               </button>
             </form>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <Field label="Full Name">
                 <input value={form.full_name} onChange={set("full_name")}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Jane Doe" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  className={inputCls} style={inputStyle} placeholder="Jane Doe" />
+              </Field>
+              <Field label="Email">
                 <input required type="email" value={form.email} onChange={set("email")}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="jane@company.com" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                  className={inputCls} style={inputStyle} placeholder="jane@company.com" />
+              </Field>
+              <Field label="Username">
                 <input required value={form.username} onChange={set("username")}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="jane_doe" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  className={inputCls} style={inputStyle} placeholder="jane_doe" />
+              </Field>
+              <Field label="Password">
                 <input required type="password" value={form.password} onChange={set("password")}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="••••••••" />
-              </div>
+                  className={inputCls} style={inputStyle} placeholder="••••••••" />
+              </Field>
               <button type="submit" disabled={loading}
-                className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                className="w-full rounded-lg py-2.5 text-sm font-semibold mt-2 disabled:opacity-50 transition-opacity"
+                style={{ background: "var(--accent)", color: "#fff" }}>
                 {loading ? "Creating account…" : "Create Account"}
               </button>
             </form>
